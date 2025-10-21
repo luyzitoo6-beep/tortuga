@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tortuga de Mirisita — Corazones</title>
+  <style>
+    :root{
+      --verde1:#0b3d0b;
+      --verde2:#1a6b1a;
+      --verde3:#25a025;
+      --verde4:#7be27b;
+      --sombra:0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    html,body{
+      margin:0; height:100%; background:var(--verde1); font-family:system-ui, sans-serif;
+    }
+
+    body::before{
+      content:""; position:fixed; inset:0; z-index:-1;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><g fill="%2325a025" opacity="0.18"><path d="M20 30c0 0 10-9 20 0c10-9 20 0 20 0s0 20-20 32C40 62 20 50 20 32z"/></g></svg>');
+      background-size:160px 160px;
+      filter:saturate(1.05) blur(.2px);
+    }
+
+    .escena{display:flex;justify-content:center;align-items:center;height:100vh;}
+
+    .zona{
+      width:480px; height:480px; display:flex; align-items:center; justify-content:center;
+      border-radius:16px; overflow:hidden; background:linear-gradient(180deg,rgba(11,61,11,0.15),rgba(255,255,255,0.05));
+      border:2px solid rgba(255,255,255,0.1); box-shadow:var(--sombra) inset;
+      position:relative;
+    }
+
+    .pixel{
+      image-rendering:pixelated; transform:scale(2.8); cursor:pointer; user-select:none;
+      position:absolute; transition: transform 1s ease;
+    }
+
+    .corazon{
+      position:absolute; display:flex; flex-direction:column; align-items:center;
+      animation:subir 1.5s ease-out forwards; pointer-events:none;
+    }
+
+    .corazon svg{width:40px; height:40px;}
+    .mensaje{color:white; font-size:12px; text-shadow:0 2px 4px rgba(0,0,0,0.4);}
+
+    @keyframes subir{
+      0%{opacity:0; transform:translate(-50%,0) scale(0.85) rotate(0deg);}
+      20%{opacity:1;}
+      100%{opacity:0; transform:translate(-50%,-180px) scale(0.9) rotate(20deg);}
+    }
+
+    .tortuga{width:64px; height:48px; display:block;}
+    .tortuga.rebote{animation:rebote 420ms cubic-bezier(.2,.9,.25,1);}
+    @keyframes rebote{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+  </style>
+</head>
+<body>
+  <div class="escena">
+    <div class="zona" id="zona">
+      <div id="tortuga" class="pixel" title="Presióname, Mirisita">
+        <svg class="tortuga" viewBox="0 0 32 24" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <!-- Caparazón marrón -->
+          <rect x="10" y="5" width="12" height="8" fill="#6b3f1f"/>
+          <rect x="11" y="6" width="10" height="6" fill="#8b5a2b"/>
+          <rect x="12" y="7" width="8" height="4" fill="#a06a38"/>
+          <rect x="13" y="8" width="6" height="2" fill="#c68958"/>
+          <!-- Cuerpo verde -->
+          <rect x="5" y="8" width="5" height="6" fill="#2d8b2d"/>
+          <rect x="24" y="9" width="3" height="4" fill="#2d8b2d"/>
+          <rect x="27" y="10" width="2" height="2" fill="#2d8b2d"/>
+          <!-- Cabeza -->
+          <rect x="3" y="9" width="3" height="4" fill="#3da63d"/>
+          <rect x="5" y="10" width="1" height="1" fill="#000"/>
+          <!-- Patas -->
+          <rect x="7" y="14" width="3" height="2" fill="#1e6b1e"/>
+          <rect x="11" y="14" width="3" height="2" fill="#1e6b1e"/>
+          <rect x="18" y="14" width="3" height="2" fill="#1e6b1e"/>
+          <rect x="22" y="14" width="3" height="2" fill="#1e6b1e"/>
+          <!-- Borde oscuro -->
+          <rect x="10" y="13" width="12" height="1" fill="#000" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tortuga = document.getElementById('tortuga');
+    const zona = document.getElementById('zona');
+    const colores = ['#25a025','#2fb52f','#1f8f1f','#7be27b'];
+
+    function crearCorazon(){
+      const div = document.createElement('div');
+      div.className = 'corazon';
+      const color = colores[Math.floor(Math.random()*colores.length)];
+      div.innerHTML = `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M23.6 6.2c-2-2-5.2-2-7.2 0L16 6.6l-.4-.4c-2-2-5.2-2-7.2 0-2 2-2 5.2 0 7.2L16 26l7.6-12.6c2-2 2-5.2 0-7.2z" fill="${color}"/>
+      </svg><div class='mensaje'>te amo Mirisita</div>`;
+      div.style.left=`${50+Math.random()*20-10}%`;
+      zona.appendChild(div);
+      setTimeout(()=>div.remove(),1500);
+    }
+
+    tortuga.addEventListener('click',()=>{
+      const svg=tortuga.querySelector('.tortuga');
+      svg.classList.remove('rebote');
+      void svg.offsetWidth;
+      svg.classList.add('rebote');
+      crearCorazon();
+    });
+
+    function moverTortuga(){
+      const maxX = zona.clientWidth - tortuga.clientWidth;
+      const maxY = zona.clientHeight - tortuga.clientHeight;
+      const x = Math.random()*maxX;
+      const y = Math.random()*maxY;
+      tortuga.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    setInterval(moverTortuga, 2000);
+    tortuga.style.left = '50%';
+    tortuga.style.top = '50%';
+    tortuga.style.transform = 'translate(-50%, -50%)';
+  </script>
+</body>
+</html>
